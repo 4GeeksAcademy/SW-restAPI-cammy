@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Character, Planet, Favorite
 #from models import Person
 
 app = Flask(__name__)
@@ -36,6 +36,7 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+#USER
 @app.route('/user', methods=['GET'])
 def handle_hello():
 
@@ -49,8 +50,8 @@ def create_user():
 
     request_body_user =  request.get_json()
 
-    earth = User(first_name=request_body_user["first_name"], email=request_body_user["email"], password=request_body_user["password"])
-    db.session.add(earth)
+    change = User(first_name=request_body_user["first_name"], email=request_body_user["email"], password=request_body_user["password"])
+    db.session.add(change)
     db.session.commit()
 
     return jsonify(request_body_user), 200
@@ -85,6 +86,75 @@ def update_user(user_id):
    db.session.commit()
 
    return jsonify(request_body_user), 200
+
+#CHARACTER
+
+@app.route('/character', methods=['GET'])
+def get_characters():
+
+    characters = Character.query.all()
+    all_characters = list(map(lambda x: x.serialize(), characters))
+
+    return jsonify(all_characters), 200
+
+@app.route('/character', methods=['POST'])
+def post_character():
+
+    request_body_user =  request.get_json()
+
+    change = Character(name=request_body_user["name"], eye_color=request_body_user["eye_color"], birth_year=request_body_user["birth_year"], gender=request_body_user["gender"])
+    
+    db.session.add(change)
+    db.session.commit()
+
+    return jsonify(request_body_user), 200
+
+
+#PLANET
+
+@app.route('/planet', methods=['GET'])
+def get_planets():
+
+    planet = Planet.query.all()
+    all_planets = list(map(lambda x: x.serialize(), planet))
+
+    return jsonify(all_planets), 200
+
+@app.route('/planet', methods=['POST'])
+def post_planets():
+
+    request_body_user =  request.get_json()
+
+    change = Planet(name=request_body_user["name"], diameter=request_body_user["diameter"], climate=request_body_user["climate"])
+    
+    db.session.add(change)
+    db.session.commit()
+
+    return jsonify(request_body_user), 200
+
+
+#FAVORITE
+
+@app.route('/user/favorite', methods=['GET'])
+def get_favorites():
+
+    favorite = Favorite.query.all()
+    all_favorites = list(map(lambda x: x.serialize(), favorite))
+
+    return jsonify(all_favorites), 200
+
+@app.route('/user/favorite', methods=['POST'])
+def post_favorites():
+
+    request_body_user =  request.get_json()
+
+    change = Favorite(character_id=request_body_user["character_id"], planet_id=request_body_user["planet_id"])
+    
+    db.session.add(change)
+    db.session.commit()
+
+    return jsonify(request_body_user), 200
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
