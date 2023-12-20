@@ -26,7 +26,7 @@ class Planet(db.Model):
     climate = db.Column(db.String(80), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<Planet %r>' % self.id
+        return '<Planet %r>' % self.name
 
     def serialize(self):
         return {
@@ -59,17 +59,22 @@ class Character(db.Model):
     
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    character_id = db.Column(db.Integer, nullable=True)
-    planet_id = db.Column(db.Integer, unique=False, nullable=True)
-    user_id = db.Column(db.Integer)
+    character_id = db.Column(db.Integer, db.ForeignKey('character.id'))
+    planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    character = db.relationship('Character', foreign_keys=[character_id], lazy=True)
+    planet = db.relationship('Planet', foreign_keys=[planet_id], lazy=True)
+    user = db.relationship('User', foreign_keys=[user_id])
     
     def __repr__(self):
-        return '<Favorite %r>' % self.character_id
+        return '<Favorite %r>' % self.id
 
     def serialize(self):
         return {
             "id": self.id,
-            "character_id": self.character_id,
-            "planet_id": self.planet_id
+            "character": self.character.serialize() if self.character else None,
+            "planet": self.planet.serialize() if self.planet else None,
+            "user": self.user.serialize() if self.user else None
             # do not serialize the password, its a security breach
         }
