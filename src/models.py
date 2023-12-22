@@ -73,6 +73,9 @@ class Favorite(db.Model):
     def serialize(self):
         return {
             "id": self.id,
+            "character_id": self.character_id,
+            "planet_id": self.planet_id,
+            "user_id": self.user_id,
             "character": self.character.serialize() if self.character else None,
             "planet": self.planet.serialize() if self.planet else None,
             "user": self.user.serialize() if self.user else None
