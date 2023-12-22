@@ -251,15 +251,6 @@ def character_favorites(user_id, character_id):
 # DELETE
 @app.route('/user/<int:user_id>/favorite/planet/<int:planet_id>', methods=['DELETE'])
 def planet_delete(user_id, planet_id):
-
-    user = User.query.get(user_id)
-    planet = Character.query.get(planet_id)
-
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-    
-    if not planet:
-        return jsonify({"error": "Planet not found"}), 404
     
     favorite = Favorite.query.filter_by(user_id=user_id, planet_id=planet_id).first()
 
